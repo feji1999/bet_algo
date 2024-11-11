@@ -15,8 +15,30 @@
         h1 {
             color: #4CAF50;
         }
+
+        #predictbtn {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 24px;
+        }
         .input-group {
             margin-bottom: 15px;
+            font-size: 24px;
+            color: #4CAF50;
+        }
+        #totalMatches {
+            border: 4px solid #4CAF50;
+            height: 40px;
+            color: #4CAF50;
+        }
+        #oddsSeed {
+            border: 4px solid #4CAF50;
+            height: 40px;
+            color: #4CAF50;
+        }
+        li {
+            color: #4CAF50;
+            font-size: 24px;
         }
         #result, #probability {
             margin-top: 20px;
@@ -34,9 +56,16 @@
         <label for="oddsSeed">Odds Seed (integer):</label>
         <input type="number" id="oddsSeed" min="1" placeholder="e.g., 5">
     </div>
-    <button onclick="analyzeBets()">Predict Outcomes</button>
+    <button id="predictbtn" onclick="analyzeBets()">Predict Outcomes</button>
     <div id="result"></div>
     <div id="probability"></div>
+
+    <h1><u>Basketball Betting Playbook</u></h1>
+    <li>Bet in a combination of matches(not more than 22 matches per betslip), with odds in each game between 1.5  and 1.95</li>
+    <li>After obtaining your master betslip by selecting games based on your discretion, use the betslip algo above </li>
+    <li>Edit the betslip and play a reduced version of the matches 4 more times(i.e remove games)</li>
+    <li>Target to win atleast 1 of the 5 total betslips. The matches must be derived from the master betslip</li>
+    <li>Example: Master Betslip(22 matches), Slip2(16 matches),Slip3(14 matches), Slip4(9 matches),Slip5(4 matches)</li>
 
     <script>
         function analyzeBets() {
