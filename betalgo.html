@@ -15,23 +15,18 @@
         h1 {
             color: #4CAF50;
         }
-
-        #predictbtn {
+        #predictbtn, #estimateOddsBtn {
             background-color: #4CAF50;
             color: white;
             font-size: 24px;
+            margin-top: 10px;
         }
         .input-group {
             margin-bottom: 15px;
             font-size: 24px;
             color: #4CAF50;
         }
-        #totalMatches {
-            border: 4px solid #4CAF50;
-            height: 40px;
-            color: #4CAF50;
-        }
-        #oddsSeed {
+        #totalMatches, #predictionTotalMatches, #oddsSeed, #odds {
             border: 4px solid #4CAF50;
             height: 40px;
             color: #4CAF50;
@@ -40,7 +35,7 @@
             color: #4CAF50;
             font-size: 24px;
         }
-        #result, #probability {
+        #result, #probability, #estimatedOdds {
             margin-top: 20px;
             font-weight: bold;
         }
@@ -48,30 +43,50 @@
 </head>
 <body>
     <h1>Bet Analyser Algorithm</h1>
+
+    <!-- Betting Predictions Section -->
     <div class="input-group">
-        <label for="totalMatches">Total Matches:</label>
-        <input type="number" id="totalMatches" min="1" placeholder="e.g., 10">
+        <label for="predictionTotalMatches">Total Matches for Prediction:</label>
+        <input type="number" id="predictionTotalMatches" min="1" placeholder="e.g., 10">
     </div>
     <div class="input-group">
         <label for="oddsSeed">Odds Seed (integer):</label>
         <input type="number" id="oddsSeed" min="1" placeholder="e.g., 5">
     </div>
     <button id="predictbtn" onclick="analyzeBets()">Predict Outcomes</button>
+
+    <!-- Display Predictions and Probability -->
     <div id="result"></div>
     <div id="probability"></div>
 
+    <!-- Odds Estimation Section -->
+    <h2>Estimate Binomial Odds</h2>
+    <div class="input-group">
+        <label for="totalMatches">Total Matches for Odds Estimation:</label>
+        <input type="number" id="totalMatches" min="1" placeholder="e.g., 10">
+    </div>
+    <div class="input-group">
+        <label for="odds">Custom Odds (X):</label>
+        <input type="number" id="odds" placeholder="Enter custom odds" step="0.01">
+    </div>
+    <button id="estimateOddsBtn" onclick="estimateOdds()">Estimate Binomial Odds</button>
+
+    <!-- Display Estimated Odds -->
+    <div id="estimatedOdds"></div>
+
+    <!-- Betting Playbook Instructions -->
     <h1><u>Basketball Betting Playbook</u></h1>
-    <li>Bet in a combination of matches(not more than 22 matches per betslip), with odds in each game between 1.5  and 1.95</li>
-    <li>After obtaining your master betslip by selecting games based on your discretion, use the betslip algo above </li>
-    <li>Edit the betslip and play a reduced version of the matches 4 more times(i.e remove games)</li>
-    <li>Target to win atleast 1 of the 5 total betslips. The matches must be derived from the master betslip</li>
-    <li>Example: Master Betslip(22 matches), Slip2(16 matches),Slip3(14 matches), Slip4(9 matches),Slip5(4 matches)</li>
+    <li>Bet in a combination of matches (not more than 22 matches per betslip), with odds in each game between 1.5 and 1.95</li>
+    <li>After obtaining your master betslip by selecting games based on your discretion, use the betslip algo above</li>
+    <li>Edit the betslip and play a reduced version of the matches 4 more times (i.e., remove games)</li>
+    <li>Target to win at least 1 of the 5 total betslips. The matches must be derived from the master betslip</li>
+    <li>Example: Master Betslip (22 matches), Slip2 (16 matches), Slip3 (14 matches), Slip4 (9 matches), Slip5 (4 matches)</li>
 
     <script>
         function analyzeBets() {
-            const totalMatches = parseInt(document.getElementById('totalMatches').value);
+            const predictionTotalMatches = parseInt(document.getElementById('predictionTotalMatches').value);
             const oddsSeed = parseInt(document.getElementById('oddsSeed').value);
-            if (isNaN(totalMatches) || isNaN(oddsSeed)) {
+            if (isNaN(predictionTotalMatches) || isNaN(oddsSeed)) {
                 alert("Please enter valid numbers for both fields.");
                 return;
             }
@@ -80,7 +95,7 @@
             let predictions = [];
 
             // Generate random outcomes based on the odds seed
-            for (let i = 0; i < totalMatches; i++) {
+            for (let i = 0; i < predictionTotalMatches; i++) {
                 let randomIndex = (Math.floor(Math.random() * oddsSeed) + i) % outcomes.length;
                 predictions.push(outcomes[randomIndex]);
             }
@@ -90,12 +105,31 @@
 
             // Calculate binomial probability for hitting over/under with a given success rate
             const winRate = 0.71;  // Assume a default win rate of 71%
-            const probabilityOfAllCorrect = Math.pow(winRate, totalMatches);
+            const probabilityOfAllCorrect = Math.pow(winRate, predictionTotalMatches);
             const probabilityText = `
                 Probability of predicting all correctly: ${(probabilityOfAllCorrect * 100).toFixed(2)}%
                 (using a ${winRate * 100}% win rate).
             `;
             document.getElementById("probability").innerHTML = probabilityText;
+        }
+
+        function estimateOdds() {
+            const odds = parseFloat(document.getElementById('odds').value);
+            const matches = parseInt(document.getElementById('totalMatches').value);
+
+            // Validate inputs
+            if (isNaN(odds) || odds <= 0) {
+                alert("Please enter a valid odds value greater than 0.");
+                return;
+            }
+            if (isNaN(matches) || matches < 1) {
+                alert("Please enter a valid number of matches.");
+                return;
+            }
+
+            // Calculate cumulative odds as X^a
+            const estimatedOdds = Math.pow(odds, matches);
+            document.getElementById("estimatedOdds").textContent = `Estimated Binomial Odds: ${estimatedOdds.toFixed(2)}`;
         }
     </script>
 </body>
