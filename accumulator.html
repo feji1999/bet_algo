@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accumulator Prediction Model</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .betslip {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Accumulator Prediction Model</h1>
+    <div>
+        <div class="form-group">
+            <label for="totalMatches">Total Number of Matches/Events:</label>
+            <input type="number" id="totalMatches" min="1" value="5">
+        </div>
+        <div class="form-group">
+            <label for="omissionsRule">Omissions Rule (Number of Matches to Omit):</label>
+            <input type="number" id="omissionsRule" min="0" value="1">
+        </div>
+        <div class="form-group">
+            <label for="maxOutput">Maximum Number of Child Betslips:</label>
+            <input type="number" id="maxOutput" min="1" value="10">
+        </div>
+        <button id="generateBetslips">Generate Betslips</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('generateBetslips').addEventListener('click', function () {
+            const totalMatches = parseInt(document.getElementById('totalMatches').value, 10);
+            const omissionsCount = parseInt(document.getElementById('omissionsRule').value, 10);
+            const maxOutput = parseInt(document.getElementById('maxOutput').value, 10);
+
+            // Validate inputs
+            if (totalMatches < 1 || omissionsCount < 0 || omissionsCount >= totalMatches) {
+                alert("Invalid input. Ensure omissions count is less than total matches.");
+                return;
+            }
+
+            // Generate the master betslip
+            const masterBetslip = Array.from({ length: totalMatches }, (_, i) => `Match ${i + 1}`);
+
+            // Output container
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // Clear previous output
+
+            // Display the master betslip
+            const masterDiv = document.createElement('div');
+            masterDiv.className = 'betslip';
+            masterDiv.innerHTML = `<strong>Master Betslip:</strong> ${masterBetslip.join(', ')}`;
+            outputDiv.appendChild(masterDiv);
+
+            // Generate all combinations of omissions
+            function generateCombinations(arr, k) {
+                if (k === 0) return [[]];
+                if (arr.length === 0) return [];
+                const [first, ...rest] = arr;
+                const withFirst = generateCombinations(rest, k - 1).map(comb => [first, ...comb]);
+                const withoutFirst = generateCombinations(rest, k);
+                return withFirst.concat(withoutFirst);
+            }
+
+            const allCombinations = generateCombinations(masterBetslip.map((_, i) => i), omissionsCount);
+
+            // Select diverse combinations
+            const step = Math.max(1, Math.floor(allCombinations.length / maxOutput));
+            const diverseCombinations = allCombinations.filter((_, idx) => idx % step === 0).slice(0, maxOutput);
+
+            // Generate and display child betslips
+            diverseCombinations.forEach((combination, idx) => {
+                const childBetslip = masterBetslip.filter((_, i) => !combination.includes(i));
+                const childDiv = document.createElement('div');
+                childDiv.className = 'betslip';
+                childDiv.innerHTML = `<strong>Child Betslip ${idx + 1}:</strong> ${childBetslip.join(', ')}`;
+                outputDiv.appendChild(childDiv);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Bet Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            margin: auto;
+        }
+        input, button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .output {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Basketball Bet Generator</h2>
+        <input type="number" id="totalMatches" placeholder="Total Basketball Matches of the Day">
+        <input type="number" id="matchesPerBetslip" placeholder="Number of Matches Desired in a Betslip">
+        <button onclick="generateBetslip()">Generate Betslip</button>
+        <div class="output" id="output"></div>
+    </div>
+
+    <script>
+        function generateBetslip() {
+            let totalMatches = parseInt(document.getElementById("totalMatches").value);
+            let matchesPerBetslip = parseInt(document.getElementById("matchesPerBetslip").value);
+            let outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "";
+            
+            if (isNaN(totalMatches) || isNaN(matchesPerBetslip)) {
+                outputDiv.innerHTML = "<p style='color:red;'>Please enter valid numbers!</p>";
+                return;
+            }
+
+            let preferredNumbers = [5, 6, 8, 11, 16, 22];
+            let betslip = [];
+            let sum = 0;
+
+            while (sum < matchesPerBetslip) {
+                let num = preferredNumbers[Math.floor(Math.random() * preferredNumbers.length)];
+                if (sum + num <= matchesPerBetslip) {
+                    betslip.push(num);
+                    sum += num;
+                }
+                if (sum + Math.min(...preferredNumbers) > matchesPerBetslip) break;
+            }
+            
+            if (sum === matchesPerBetslip) {
+                outputDiv.innerHTML = `<p><strong>Betslip:</strong> ${betslip.join(", ")}</p>`;
+            } else {
+                outputDiv.innerHTML = "<p style='color:red;'>Could not generate a valid betslip. Try different numbers.</p>";
+            }
+        }
+    </script>
+</body>
+</html>

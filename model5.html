@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Home-Away Analysis Algorithm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        table {
+            width: 100%;
+            margin-bottom: 10px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        input {
+            width: 80%;
+            padding: 5px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .add-btn {
+            background-color: blue;
+        }
+        .forecast-btn {
+            background-color: darkblue;
+        }
+        .output {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Basketball Home-Away Analysis Algorithm</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Team A Odds</th>
+                <th>Team B Odds</th>
+            </tr>
+        </thead>
+        <tbody id="oddsTable">
+            <tr>
+                <td><input type="number" step="0.01" class="teamA"></td>
+                <td><input type="number" step="0.01" class="teamB"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button class="add-btn" onclick="addRow()">Add Match</button>
+    <button class="forecast-btn" onclick="startForecast()">Start Forecast</button>
+    <div class="output" id="output"></div>
+</div>
+
+<script>
+    function addRow() {
+        let table = document.getElementById("oddsTable");
+        let row = document.createElement("tr");
+        row.innerHTML = `
+            <td><input type="number" step="0.01" class="teamA"></td>
+            <td><input type="number" step="0.01" class="teamB"></td>
+        `;
+        table.appendChild(row);
+    }
+
+    function startForecast() {
+    let teamAInputs = document.querySelectorAll(".teamA");
+    let teamBInputs = document.querySelectorAll(".teamB");
+    let totalMatches = teamAInputs.length;
+    let outputDiv = document.getElementById("output");
+    outputDiv.innerHTML = ""; 
+
+    teamAInputs.forEach((input, index) => {
+        let teamAOdds = parseFloat(input.value);
+        let teamBOdds = parseFloat(teamBInputs[index].value);
+        
+        if (isNaN(teamAOdds) || isNaN(teamBOdds) || teamAOdds <= 0 || teamBOdds <= 0) {
+            return; 
+        }
+
+        let Oddweighted = (teamAOdds + teamBOdds) / 2; // Corrected weighted odds calculation
+        let forecast = (teamAOdds * teamBOdds * totalMatches) / Oddweighted;
+        let sinusoid = Math.sin(forecast);
+        let teamAScore = Math.floor((sinusoid + 1) * 50);
+        let teamBScore = Math.floor((1 - sinusoid) * 50);
+        let winner = sinusoid > 0 ? "Home Team Wins" : "Away Team Wins";
+
+        outputDiv.innerHTML += `Match ${index + 1}: Simulated Score: Team A ${teamAScore} - ${teamBScore} Team B<br>${winner}<br><br>`;
+    });
+}
+
+</script>
+
+</body>
+</html>

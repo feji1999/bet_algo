@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports Betting Model Forecast</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input, select, button, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .output {
+      padding: 10px;
+      background: #eef9ee;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #388e3c;
+    }
+    .history {
+      margin-top: 30px;
+      padding: 10px;
+      background: #f1f1f1;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .history-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Sports Betting Model Forecast</h2>
+    <form id="bettingForm">
+      <label for="hour">Start Hour (H):</label>
+      <select id="hour" required>
+        <option value="" disabled selected>Select Hour</option>
+        <script>
+          for (let i = 1; i < 24; i++) {
+            document.write(`<option value="${i}">${i}</option>`);
+          }
+        </script>
+      </select>
+
+      <label for="betPrice">Bet Price:</label>
+      <input type="number" id="betPrice" placeholder="Enter Bet Price (e.g., 160.5)" step="0.1" required>
+
+      <label for="overOdds">Over Odds:</label>
+      <input type="number" id="overOdds" placeholder="Enter Over Odds (e.g., 1.9)" step="0.01" required>
+
+      <label for="underOdds">Under Odds:</label>
+      <input type="number" id="underOdds" placeholder="Enter Under Odds (e.g., 2.1)" step="0.01" required>
+
+      <label for="comment">Comments (Optional):</label>
+      <textarea id="comment" placeholder="Type club names or observations for future analysis..." rows="3"></textarea>
+
+      <button type="button" onclick="calculateForecast()">Calculate Forecast</button>
+    </form>
+
+    <div id="output" class="output" style="display: none;"></div>
+
+    <div class="history" id="history" style="display: none;">
+      <h3>History</h3>
+    </div>
+  </div>
+
+  <script>
+    // Function to calculate Fibonacci of a number
+    function fibonacci(n) {
+      if (n <= 1) return n;
+      return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+
+    // Main function to calculate the forecast
+    function calculateForecast() {
+      const hour = parseInt(document.getElementById('hour').value);
+      const betPrice = parseFloat(document.getElementById('betPrice').value);
+      const overOdds = parseFloat(document.getElementById('overOdds').value);
+      const underOdds = parseFloat(document.getElementById('underOdds').value);
+      const comment = document.getElementById('comment').value.trim();
+
+      if (isNaN(hour) || isNaN(betPrice) || isNaN(overOdds) || isNaN(underOdds) || hour <= 0) {
+        alert("Please provide valid inputs.");
+        return;
+      }
+
+      // Calculate Fibonacci of the current hour
+      const fibH = fibonacci(hour);
+
+      // Calculate the odds weight
+      const weight = overOdds / (overOdds + underOdds);
+
+      // Calculate the model's output
+      const modelOutput = (24 / hour) * fibH * betPrice * weight;
+
+      // Calculate the Sinusoid of the model output
+      const sinusoid = Math.sin(modelOutput);
+
+      // Determine result direction
+      const result = sinusoid < 0 ? "Under" : "Over";
+
+      // Prepare output message
+      const outputMessage = `<strong>Forecast:</strong> ${result}<br>
+                             <strong>Sinusoid Value:</strong> ${sinusoid.toFixed(4)}<br>
+                             <strong>Weight:</strong> ${weight.toFixed(4)}<br>
+                             <strong>Comment:</strong> ${comment || "N/A"}`;
+
+      // Display the current output
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = outputMessage;
+      outputDiv.style.display = "block";
+
+      // Append to history
+      appendToHistory(hour, betPrice, overOdds, underOdds, result, sinusoid, weight, comment);
+    }
+
+    // Function to append results to history
+    function appendToHistory(hour, betPrice, overOdds, underOdds, result, sinusoid, weight, comment) {
+      const historyDiv = document.getElementById('history');
+      const historyItem = document.createElement('div');
+      historyItem.classList.add('history-item');
+      historyItem.innerHTML = `
+        <strong>Hour:</strong> ${hour}<br>
+        <strong>Bet Price:</strong> ${betPrice}<br>
+        <strong>Over Odds:</strong> ${overOdds}<br>
+        <strong>Under Odds:</strong> ${underOdds}<br>
+        <strong>Weight:</strong> ${weight.toFixed(4)}<br>
+        <strong>Forecast:</strong> ${result}<br>
+        <strong>Sinusoid Value:</strong> ${sinusoid.toFixed(4)}<br>
+        <strong>Comment:</strong> ${comment || "N/A"}
+      `;
+      historyDiv.appendChild(historyItem);
+      historyDiv.style.display = "block";
+    }
+  </script>
+</body>
+</html>

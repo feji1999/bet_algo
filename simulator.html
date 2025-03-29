@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Simulator Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+        }
+        .progress {
+            height: 20px;
+            background: #007bff;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Basketball Simulator</h1>
+        <div class="form-group">
+            <label for="betPrice">Bet Price</label>
+            <input type="text" id="betPrice" placeholder="Enter bet price">
+        </div>
+        <div class="form-group">
+            <label for="startHour">Start Hour</label>
+            <input type="text" id="startHour" placeholder="Enter start hour">
+        </div>
+        <div class="form-group">
+            <label for="teamA">Team A Name</label>
+            <input type="text" id="teamA" placeholder="Enter Team A name">
+        </div>
+        <div class="form-group">
+            <label for="teamB">Team B Name</label>
+            <input type="text" id="teamB" placeholder="Enter Team B name">
+        </div>
+        <button id="simulateButton">Simulate</button>
+        <div class="output">
+            <h3>Simulation Output</h3>
+            <div id="progress" class="progress"></div>
+            <p id="summary"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('simulateButton').addEventListener('click', function() {
+            const betPrice = parseFloat(document.getElementById('betPrice').value);
+            const startHour = parseFloat(document.getElementById('startHour').value);
+            const teamA = document.getElementById('teamA').value.toUpperCase();
+            const teamB = document.getElementById('teamB').value.toUpperCase();
+
+            if (isNaN(betPrice) || isNaN(startHour) || !teamA || !teamB) {
+                alert('Please fill in all fields with valid data.');
+                return;
+            }
+
+            let teamAScore = 0;
+            let teamBScore = 0;
+
+            // Calculate overtime points
+            const totalCharacters = teamA.length + teamB.length;
+            const overtimePoints = (totalCharacters / startHour);
+
+            const progressBar = document.getElementById('progress');
+            progressBar.style.width = '0%';
+
+            for (let second = 1; second <= 40; second++) {
+                setTimeout(() => {
+                    let randomPointsA;
+                    let randomPointsB;
+
+                    if (betPrice >= 166) {
+                        randomPointsA = Math.floor(Math.random() * 2) + 3;
+                        randomPointsB = Math.floor(Math.random() * 2) + 3;
+                    } else if (betPrice <= 144) {
+                        randomPointsA = Math.floor(Math.random() * 2) + 1;
+                        randomPointsB = Math.floor(Math.random() * 2) + 1;
+                    } else {
+                        randomPointsA = Math.floor(Math.random() * 3) + 1;
+                        randomPointsB = Math.floor(Math.random() * 3) + 1;
+                    }
+
+                    teamAScore += randomPointsA;
+                    teamBScore += randomPointsB;
+
+                    progressBar.style.width = (second * 2.5) + '%';
+
+                    if (second === 40) {
+                        const avgPoints = (teamAScore + teamBScore) / 2;
+                        const avgTeamA = teamAScore / 40;
+                        const avgTeamB = teamBScore / 40;
+                        const totalPoints = teamAScore + teamBScore;
+                        const verdict = totalPoints > betPrice ? `Over ${betPrice}` : `Under ${betPrice}`;
+
+                        document.getElementById('summary').innerHTML = `
+                            Team A Score: ${teamAScore}<br>
+                            Team B Score: ${teamBScore}<br>
+                            Total Points Scored: ${totalPoints.toFixed(2)}<br>
+                            Average Points Scored: ${avgPoints.toFixed(2)}<br>
+                            Average Points Scored by Team A per minute: ${avgTeamA.toFixed(2)}<br>
+                            Average Points Scored by Team B per minute: ${avgTeamB.toFixed(2)}<br>
+                            Overtime Bonus Points: ${overtimePoints}<br>
+                            Over/Under Verdict: ${verdict}
+                        `;
+                    }
+                }, second * 1000);
+            }
+        });
+    </script>
+</body>
+</html>
